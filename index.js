@@ -17,12 +17,19 @@ async function run() {
     try {
         await client.connect();
         const taskCollection = client.db('task_manager').collection('tasks');
+        const completeCollection = client.db('task_manager').collection('complete');
 
         app.get('/task', async (req, res) => {
             const query = {};
             const cursor = taskCollection.find(query);
             const tasks = await cursor.toArray();
             res.send(tasks);
+        });
+        app.get('/complete', async (req, res) => {
+            const query = {};
+            const cursor = completeCollection.find(query);
+            const completes = await cursor.toArray();
+            res.send(completes);
         });
 
         // post
@@ -37,6 +44,12 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await taskCollection.deleteOne(query);
+            res.send(result);
+        })
+        app.delete('/complete/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await completeCollection.deleteOne(query);
             res.send(result);
         })
     }
